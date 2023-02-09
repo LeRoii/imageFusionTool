@@ -5,7 +5,7 @@
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow)
+    ui(new Ui::MainWindow),m_factor(0.5)
 {
     ui->setupUi(this);
 
@@ -37,8 +37,13 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->roiHhorizontalSlider->setValue(mapSz.height);
     ui->roiWHorizontalSlider->setValue(mapSz.width);
 
+    ui->factorHorizontalSlider->setMaximum(100);
+    ui->factorHorizontalSlider->setMinimum(1);
+    ui->factorHorizontalSlider->setValue(50);
+
     ui->roiHLabel->setText("height:"+QString::number(ui->roiHhorizontalSlider->value()));
     ui->roiWLabel->setText("width:"+QString::number(ui->roiWHorizontalSlider->value()));
+    ui->factorLabel->setText("factor:"+QString::number(ui->factorHorizontalSlider->value()));
 
 
 }
@@ -83,7 +88,7 @@ void MainWindow::fusion()
     m_camRoi.width = m_mapRoi.width = m_fusionSz.width;
     m_camRoi.height = m_mapRoi.height = m_fusionSz.height;
 
-    cv::addWeighted(camResize(m_camRoi), 0.5, m_mapImg(m_mapRoi), 0.5, 0, m_fusionRet);
+    cv::addWeighted(camResize(m_camRoi), m_factor, m_mapImg(m_mapRoi), 1-m_factor, 0, m_fusionRet);
     m_final = m_mapImg.clone();
     m_fusionRet.copyTo(m_final(m_mapRoi));
 
@@ -149,4 +154,13 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
         break;
     }
     fusion();
+}
+
+void MainWindow::on_factorHorizontalSlider_valueChanged(int value)
+{
+    ui->factorLabel->setText("factor:"+QString::number(value));
+    m_factor = value/100.0;
+    qDebug("m_factor:%f\n", m_factor);
+    fusion();
+
 }

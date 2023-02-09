@@ -27,6 +27,8 @@ private slots:
 
     void on_roiHhorizontalSlider_valueChanged(int value);
 
+    void on_factorHorizontalSlider_valueChanged(int value);
+
 private:
     Ui::MainWindow *ui;
 
@@ -34,6 +36,7 @@ private:
     cv::Mat m_mapImg, m_camImg, m_fusionRet, m_final;
     int m_x, m_y;
     cv::Size m_fusionSz, m_setSz, m_camSz;
+    double m_factor;
 };
 
 #endif // MAINWINDOW_H
